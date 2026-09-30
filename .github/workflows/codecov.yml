@@ -1,0 +1,27 @@
+name: Cobertura C++
+on: [push]
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Instalar herramientas
+        run: sudo apt-get install -y gcovr
+
+      - name: Compilar con cobertura
+        run: g++ -fprofile-arcs -ftest-coverage -o pruebas operaciones.cpp
+
+      - name: Ejecutar pruebas
+        run: ./pruebas
+
+      - name: Generar reporte
+        run: gcovr --xml -o coverage.xml
+
+      - name: Subir a Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
